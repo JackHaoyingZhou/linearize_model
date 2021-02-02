@@ -71,7 +71,7 @@ u_path = []
 #us_init = np.random.uniform(-1, 1, (N-1, dynamics.action_size))
 count = 0
 N = runner.get_length()
-print(N)
+#print(N)
 while count < runner.get_length():
     count += 1
     runner.step()

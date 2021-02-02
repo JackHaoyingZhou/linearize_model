@@ -14,6 +14,7 @@ from ilqr.dynamics import AutoDiffDynamics, BatchAutoDiffDynamics, FiniteDiffDyn
 import random
 import sys
 from tqdm import tqdm
+import time
 
 dt = 0.01  # Discrete time-step in seconds.
 tf = 2.0
@@ -113,7 +114,11 @@ print(R)
 us_init = np.random.uniform(-1, 1, (N-1, dynamics.action_size))
 #
 #
+
+
 cost = PathQRCost(Q[0], R, x_path=x_path, u_path=u_path)
+
+
 
 #print(cost)
 #
@@ -121,8 +126,13 @@ cost = PathQRCost(Q[0], R, x_path=x_path, u_path=u_path)
 
 #
 J_hist = []
+
 ilqr = iLQR(dynamics, cost, N-1)
+
+start_time = time.time()
 xs, us = ilqr.fit(x0, us_init, on_iteration=on_iteration)
+print("--- %s seconds ---" % (time.time() - start_time))
+
 # len_us = len(us)
 # print(f"len(us)={len_us}")
 # print(us)
@@ -147,9 +157,25 @@ ilqr2 = iLQR(dynamics, cost2, N-1)
 
 cntrl = RecedingHorizonControllerPath(x0, ilqr2)
 
-# print(J_hist)
-# print(type(J_hist))
-# print(len(J_hist))
+print(J_hist)
+print(type(J_hist))
+print(len(J_hist))
+
+plt.figure()
+
+t = range(len(J_hist))
+
+plt.plot(t,J_hist,lineWidth=3)
+
+
+plt.xticks(size=20)
+plt.yticks(size=20)
+plt.xlabel('Iteration', fontsize= 30)
+plt.ylabel('Cost', fontsize = 30)
+plt.title('Cost Convergence', fontsize = 40)
+
+plt.show()
+
 # plt.ion()
 #
 # count = 0
@@ -317,22 +343,22 @@ path = np.array(path)
 #import scipy.io
 #scipy.io.savemat('test.mat',{'xpath':x_path,'gen_path':path,'us':us2})
 
-print(x_path.shape)
-print(path.shape)
-
-f,  axes = plt.subplots(2, 3, sharex=True)
-
-axes[0, 0].plot(x_path[:, 0], "r")
-axes[0, 0].plot(path[:, 0], "g")
-axes[0, 1].plot(x_path[:, 1], "r")
-axes[0, 1].plot(path[:, 1], "g")
-axes[0, 2].plot(x_path[:, 2], "r")
-axes[0, 2].plot(path[:, 2], "g")
-
-axes[1, 0].plot(us2[:, 0], "r")
-axes[1, 1].plot(us2[:, 1], "r")
-axes[1, 2].plot(us2[:, 2], "r")
-plt.show()
+# print(x_path.shape)
+# print(path.shape)
+#
+# f,  axes = plt.subplots(2, 3, sharex=True)
+#
+# axes[0, 0].plot(x_path[:, 0], "r")
+# axes[0, 0].plot(path[:, 0], "g")
+# axes[0, 1].plot(x_path[:, 1], "r")
+# axes[0, 1].plot(path[:, 1], "g")
+# axes[0, 2].plot(x_path[:, 2], "r")
+# axes[0, 2].plot(path[:, 2], "g")
+#
+# axes[1, 0].plot(us2[:, 0], "r")
+# axes[1, 1].plot(us2[:, 1], "r")
+# axes[1, 2].plot(us2[:, 2], "r")
+# plt.show()
 
 # _ = ax1.set_title("Trajectory of Hip")
 # _ = ax1.set_ylabel("angle")
